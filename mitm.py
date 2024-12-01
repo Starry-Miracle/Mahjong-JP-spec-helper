@@ -9,9 +9,11 @@ import copy
 import os
 import asyncio
 import threading
+import configparser
 
 
 scheduler = sched.scheduler(time.time, time.sleep)
+config = configparser.ConfigParser()
 
 class Score:
     def __init__(self):
@@ -40,10 +42,19 @@ def run_scheduler():
         
 class Filter:
     filter: flowfilter.TFilter
-    
 
     def __init__(self):
         print("Starting...")
+        
+        try:
+            config_file = open('config.txt')
+            config.read_file(config_file)
+        except:
+            config['Config'] = {"Debug":False, "Delay":20}
+            with open('config.txt', 'w') as configfile:
+                config.write(configfile)
+        
+        
         self.filter = flowfilter.parse('~s ~u record/get')
         
 
@@ -66,6 +77,7 @@ class Filter:
                     return
                 
                 print("Enter Spectate Room...")
+
                 
                 self.clear_queue()
                 time.sleep(1)
@@ -94,15 +106,26 @@ class Filter:
                             #pass
                             ##assume 4 player game
                             roominfo.Is_3ma = False
+                            
+                        ##TODO: reset score when enter room
+                        print("Resetting score...")
+                        self.clean_score(roominfo.Is_3ma)
+                        ########################################################??????????????????
+                     
+
+                        ##TODO: find 1st dealer_pos to check start East player
+                        data_pos_str = kyoku['handEventRecord'][0].get('data')
+                        data_pos_dict = json.loads(data_pos_str)
+                        start_east = data_pos_dict.get("dealer_pos")
                         
                         for player_info in kyoku['players']:
-                            if player_info['position'] == 0:
+                            if player_info['position'] == ((0-start_east)%len(kyoku['players'])):
                                 roominfo.East_UID = player_info['userId']
-                            elif player_info['position'] == 1:
+                            elif player_info['position'] == ((1-start_east)%len(kyoku['players'])):
                                 roominfo.South_UID = player_info['userId']
-                            elif player_info['position'] == 2:
+                            elif player_info['position'] == ((2-start_east)%len(kyoku['players'])):
                                 roominfo.West_UID = player_info['userId']
-                            elif player_info['position'] == 3:
+                            elif player_info['position'] == ((3-start_east)%len(kyoku['players'])):
                                 roominfo.North_UID = player_info['userId']
                             else:
                                 pass ##????
@@ -169,6 +192,13 @@ class Filter:
                             #print(int(record['startTime']/1000))     ## epoch time, in second
                             response_time  = game_data_dict['data']['nowTime'] 
                             delta_time = system_time - response_time   ### the difference between expected and actual, need to add (+) this to the time provided by response
+                            
+                            #Debug delta_time
+                            try:
+                                if config.get('Config', 'Debug'):
+                                    print(f'''DEBUG: Delta time: {delta_time}''')
+                            except:
+                                pass
                             
                             adjusted_time = int(record['startTime']/1000) + delta_time
                             
@@ -237,8 +267,11 @@ class Filter:
         #    f.close()
         #except Exception as e:
         #    print("Error in writing to log, ---", e)
-        
-        adjusted_time_with_delay = int(adjusted_time + 300 + 20)        #### agari effect/count set as 20... shd be fine
+        try:
+            delay_time = config.get('Config', 'Delay')
+            adjusted_time_with_delay = int(adjusted_time + 300 + delay_time) 
+        except:
+            adjusted_time_with_delay = int(adjusted_time + 300 + 20)        #### agari effect/count set as 20... shd be fine
 
         if (adjusted_time_with_delay < int(time.time())):
             self.update_score(score)
@@ -293,6 +326,63 @@ class Filter:
         except Exception as e:
             print("Error in writing North Score, ---", e)
     
+    def clean_score(self, is_3ma):
+        if is_3ma:
+            try:
+                f_East = open('1_East_Score.txt', 'w+')
+                f_East.write("35000")
+                f_East.close()
+            except Exception as e:
+                print("Error in writing East Score, ---", e)
+            
+            try:
+                f_South = open('2_South_Score.txt', 'w+')
+                f_South.write("35000")
+                f_South.close()
+            except Exception as e:
+                print("Error in writing South Score, ---", e)           
+                
+            try:
+                f_West = open('3_West_Score.txt', 'w+')
+                f_West.write("35000")
+                f_West.close()
+            except Exception as e:
+                print("Error in writing West Score, ---", e)    
+
+            try:
+                f_North = open('4_North_Score.txt', 'w+')
+                f_North.write("NA")
+                f_North.close()
+            except Exception as e:
+                print("Error in writing North Score, ---", e)
+        else:
+            try:
+                f_East = open('1_East_Score.txt', 'w+')
+                f_East.write("25000")
+                f_East.close()
+            except Exception as e:
+                print("Error in writing East Score, ---", e)
+            
+            try:
+                f_South = open('2_South_Score.txt', 'w+')
+                f_South.write("25000")
+                f_South.close()
+            except Exception as e:
+                print("Error in writing South Score, ---", e)           
+                
+            try:
+                f_West = open('3_West_Score.txt', 'w+')
+                f_West.write("25000")
+                f_West.close()
+            except Exception as e:
+                print("Error in writing West Score, ---", e)    
+            
+            try:
+                f_North = open('4_North_Score.txt', 'w+')
+                f_North.write("25000")
+                f_North.close()
+            except Exception as e:
+                print("Error in writing North Score, ---", e)
 
     def clear_queue(self):
         global scheduler
@@ -336,7 +426,7 @@ if __name__ == "__main__":
     #import platform
     import ctypes
     
-    ### Remove comment if you do not mind cmd QuickEdit blocking print and halt program
+    ### comment below block if you do not mind cmd QuickEdit blocking print and halt program
     try:
         kernel32 = ctypes.windll.kernel32
         kernel32.SetConsoleMode(kernel32.GetStdHandle(-10), 0x80)
