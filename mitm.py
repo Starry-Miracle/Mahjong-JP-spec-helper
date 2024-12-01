@@ -51,6 +51,7 @@ class Filter:
             config.read_file(config_file)
         except:
             config['Config'] = {"Debug":False, "Delay":20}
+            config['Game'] = {"Starting_Score_4P_Lobby":25000, "Starting_Score_3P_Lobby":35000}
             with open('config.txt', 'w') as configfile:
                 config.write(configfile)
         
@@ -329,6 +330,11 @@ class Filter:
     def clean_score(self, is_3ma):
         if is_3ma:
             try:
+                start_score = config.get('Game', 'Starting_Score_3P_Lobby')
+            except:
+                start_score = 35000
+                
+            try:
                 f_East = open('1_East_Score.txt', 'w+')
                 f_East.write("35000")
                 f_East.close()
@@ -356,6 +362,12 @@ class Filter:
             except Exception as e:
                 print("Error in writing North Score, ---", e)
         else:
+        
+            try:
+                start_score = config.get('Game', 'Starting_Score_4P_Lobby')
+            except:
+                start_score = 25000
+                
             try:
                 f_East = open('1_East_Score.txt', 'w+')
                 f_East.write("25000")

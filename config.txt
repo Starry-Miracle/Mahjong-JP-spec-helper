@@ -1,0 +1,8 @@
+[Config]
+debug = False
+delay = 20
+
+[Game]
+starting_score_4p_lobby = 25000
+starting_score_3p_lobby = 35000
+
