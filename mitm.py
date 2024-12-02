@@ -196,8 +196,8 @@ class Filter:
                             
                             #Debug delta_time
                             try:
-                                if config.get('Config', 'Debug'):
-                                    print(f'''DEBUG: Delta time: {delta_time}''')
+                                if config.get('Config', 'Debug').strip().lower() == "true":
+                                    print(f'''DEBUG: Delta time from server: {delta_time}''')
                             except:
                                 pass
                             
@@ -268,11 +268,11 @@ class Filter:
         #    f.close()
         #except Exception as e:
         #    print("Error in writing to log, ---", e)
-        try:
-            delay_time = config.get('Config', 'Delay')
-            adjusted_time_with_delay = int(adjusted_time + 300 + delay_time) 
-        except:
-            adjusted_time_with_delay = int(adjusted_time + 300 + 20)        #### agari effect/count set as 20... shd be fine
+        #try:
+        delay_time = int(config.get('Config', 'Delay'))
+        adjusted_time_with_delay = int(adjusted_time + 300 + delay_time) 
+        #except:
+        #    adjusted_time_with_delay = int(adjusted_time + 300 + 20)        #### agari effect/count set as 20... shd be fine
 
         if (adjusted_time_with_delay < int(time.time())):
             self.update_score(score)
