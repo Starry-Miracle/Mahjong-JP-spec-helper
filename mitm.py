@@ -119,14 +119,27 @@ class Filter:
                         data_pos_dict = json.loads(data_pos_str)
                         start_east = data_pos_dict.get("dealer_pos")
                         
+                        
+                        #for player_info in kyoku['players']:
+                        #    if player_info['position'] == ((0-start_east)%len(kyoku['players'])):
+                        #        roominfo.East_UID = player_info['userId']
+                        #    elif player_info['position'] == ((1-start_east)%len(kyoku['players'])):
+                        #        roominfo.South_UID = player_info['userId']
+                        #    elif player_info['position'] == ((2-start_east)%len(kyoku['players'])):
+                        #        roominfo.West_UID = player_info['userId']
+                        #    elif player_info['position'] == ((3-start_east)%len(kyoku['players'])):
+                        #        roominfo.North_UID = player_info['userId']
+                        #    else:
+                        #        pass ##????
+                        
                         for player_info in kyoku['players']:
-                            if player_info['position'] == ((0-start_east)%len(kyoku['players'])):
+                            if player_info['position'] == 0:
                                 roominfo.East_UID = player_info['userId']
-                            elif player_info['position'] == ((1-start_east)%len(kyoku['players'])):
+                            elif player_info['position'] == 1:
                                 roominfo.South_UID = player_info['userId']
-                            elif player_info['position'] == ((2-start_east)%len(kyoku['players'])):
+                            elif player_info['position'] == 2:
                                 roominfo.West_UID = player_info['userId']
-                            elif player_info['position'] == ((3-start_east)%len(kyoku['players'])):
+                            elif player_info['position'] == 3:
                                 roominfo.North_UID = player_info['userId']
                             else:
                                 pass ##????
