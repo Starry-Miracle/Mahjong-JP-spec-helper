@@ -120,29 +120,51 @@ class Filter:
                         start_east = data_pos_dict.get("dealer_pos")
                         
                         
-                        #for player_info in kyoku['players']:
-                        #    if player_info['position'] == ((0-start_east)%len(kyoku['players'])):
-                        #        roominfo.East_UID = player_info['userId']
-                        #    elif player_info['position'] == ((1-start_east)%len(kyoku['players'])):
-                        #        roominfo.South_UID = player_info['userId']
-                        #    elif player_info['position'] == ((2-start_east)%len(kyoku['players'])):
-                        #        roominfo.West_UID = player_info['userId']
-                        #    elif player_info['position'] == ((3-start_east)%len(kyoku['players'])):
-                        #        roominfo.North_UID = player_info['userId']
-                        #    else:
-                        #        pass ##????
-                        
                         for player_info in kyoku['players']:
-                            if player_info['position'] == 0:
+                            if 0 == ((player_info['position']-start_east)%len(kyoku['players'])):
                                 roominfo.East_UID = player_info['userId']
-                            elif player_info['position'] == 1:
+                                try:
+                                    if config.get('Config', 'Debug').strip().lower() == "true":
+                                        print(f'''East_UID: {player_info['userId']}''')
+                                except:
+                                    pass 
+                            elif 1 == ((player_info['position']-start_east)%len(kyoku['players'])):
                                 roominfo.South_UID = player_info['userId']
-                            elif player_info['position'] == 2:
+                                try:
+                                    if config.get('Config', 'Debug').strip().lower() == "true":
+                                        print(f'''South_UID: {player_info['userId']}''')
+                                except:
+                                    pass
+                            elif 2 == ((player_info['position']-start_east)%len(kyoku['players'])):
                                 roominfo.West_UID = player_info['userId']
-                            elif player_info['position'] == 3:
+                                try:
+                                    if config.get('Config', 'Debug').strip().lower() == "true":
+                                        print(f'''West_UID: {player_info['userId']}''')
+                                except:
+                                    pass
+                            elif 3 == ((player_info['position']-start_east)%len(kyoku['players'])):
                                 roominfo.North_UID = player_info['userId']
+                                try:
+                                    if config.get('Config', 'Debug').strip().lower() == "true":
+                                        print(f'''North_UID: {player_info['userId']}''')
+                                except:
+                                    pass
                             else:
                                 pass ##????
+                        
+                       
+                        
+                        #for player_info in kyoku['players']:
+                        #    if player_info['position'] == 0:
+                        #        roominfo.East_UID = player_info['userId']
+                        #    elif player_info['position'] == 1:
+                        #        roominfo.South_UID = player_info['userId']
+                        #    elif player_info['position'] == 2:
+                        #        roominfo.West_UID = player_info['userId']
+                        #    elif player_info['position'] == 3:
+                        #        roominfo.North_UID = player_info['userId']
+                        #    else:
+                        #       pass ##????
                                 
                     agari_event_time = int(kyoku['handEventRecord'][-1]['startTime']/1000)
                     
